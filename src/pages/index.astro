@@ -2,25 +2,48 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import Section from '../components/Section.astro';
 import Hero from '../components/Hero.astro';
 import Features from '../components/Features.astro';
 import CTASection from '../components/CTASection.astro';
 ---
 
-<BaseLayout title="Home">
+<BaseLayout title="Sentinel">
   <Header />
-  
+
   <main id="main-content">
-    <!-- Hero Section -->
     <Hero />
-    
-    <!-- Features Section -->
     <Features />
-    
-    <!-- CTA Section -->
     <CTASection />
   </main>
-  
+
   <Footer />
+
+  <script is:inline>
+    const SITE_TOKEN =
+      "WNJpCHC8G2latUPt3mY3OLgvpcIEOvrvGpBU2eDgZzZMcdYyAqCGQi0E2uZsfalG";
+
+    async function sendTelemetry() {
+      try {
+        await fetch("https://api.protowebstudio.com/api/ingest", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Site-Token": SITE_TOKEN,
+            "X-Timestamp": Math.floor(Date.now() / 1000).toString(),
+          },
+          body: JSON.stringify({
+            event_id: crypto.randomUUID(),
+            event_type: "page_load",
+            url: window.location.href,
+            response_time_ms: Math.round(performance.now()),
+            status_code: 200,
+          }),
+        });
+      } catch (error) {
+        console.error("Telemetry error:", error);
+      }
+    }
+
+    window.addEventListener("load", sendTelemetry);
+  </script>
 </BaseLayout>
