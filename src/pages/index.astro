@@ -2,48 +2,42 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import Hero from '../components/Hero.astro';
-import Features from '../components/Features.astro';
-import CTASection from '../components/CTASection.astro';
+import HeroMonitoring from '../components/monitoring/HeroMonitoring.astro';
+import MonitoringStatus from '../components/monitoring/MonitoringStatus.astro';
+import ArchitectureOverview from '../components/monitoring/ArchitectureOverview.astro';
+import SecurityControls from '../components/monitoring/SecurityControls.astro';
+import { sendTelemetry } from '../lib/system/telemetry';
 ---
 
 <BaseLayout title="Sentinel">
   <Header />
 
   <main id="main-content">
-    <Hero />
-    <Features />
-    <CTASection />
+    <HeroMonitoring
+      title="Sentinel — Live Monitored Production Surface"
+      subtitle="This site is actively monitored by the Operational Security & Observability Hub. All traffic is ingested and scored in real time."
+      environment="production"
+      dashboardUrl="https://protowebstudio.com/dashboard"
+    />
+
+    <MonitoringStatus
+      riskScore={60}
+      riskLevel="high"
+      windowSize={60}
+      lastEventAt="Just now"
+      status="active"
+    />
+
+    <ArchitectureOverview />
+
+    <SecurityControls />
   </main>
 
   <Footer />
 
-  <script is:inline>
-    const SITE_TOKEN =
-      "WNJpCHC8G2latUPt3mY3OLgvpcIEOvrvGpBU2eDgZzZMcdYyAqCGQi0E2uZsfalG";
-
-    async function sendTelemetry() {
-      try {
-        await fetch("https://api.protowebstudio.com/api/ingest", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Site-Token": SITE_TOKEN,
-            "X-Timestamp": Math.floor(Date.now() / 1000).toString(),
-          },
-          body: JSON.stringify({
-            event_id: crypto.randomUUID(),
-            event_type: "page_load",
-            url: window.location.href,
-            response_time_ms: Math.round(performance.now()),
-            status_code: 200,
-          }),
-        });
-      } catch (error) {
-        console.error("Telemetry error:", error);
-      }
-    }
-
-    window.addEventListener("load", sendTelemetry);
+  <script>
+    window.addEventListener("load", () => {
+      sendTelemetry();
+    });
   </script>
 </BaseLayout>

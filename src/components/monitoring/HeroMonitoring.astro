@@ -1,0 +1,46 @@
+---
+interface Props {
+  title: string;
+  subtitle: string;
+  environment: "production" | "staging";
+  dashboardUrl: string;
+}
+
+const {
+  title,
+  subtitle,
+  environment,
+  dashboardUrl,
+} = Astro.props;
+---
+
+<section class="min-h-[70vh] flex items-center bg-surface">
+  <div class="container mx-auto px-4 py-24 text-center max-w-4xl">
+    <div class="mb-6 text-sm font-medium tracking-wide uppercase text-content-light">
+      Sentinel — Live Monitored Surface
+    </div>
+
+    <h1 class="text-5xl md:text-6xl font-bold mb-6 text-content">
+      {title}
+    </h1>
+
+    <p class="text-lg md:text-xl text-content-light mb-10 max-w-2xl mx-auto">
+      {subtitle}
+    </p>
+
+    <div class="inline-flex items-center gap-3 mb-8">
+      <span class="px-4 py-2 rounded-full border border-outline text-sm font-medium text-content-light">
+        Environment: {environment}
+      </span>
+    </div>
+
+    <div>
+      <a
+        href={dashboardUrl}
+        class="inline-flex items-center px-6 py-3 rounded-lg bg-primary text-white font-semibold hover:opacity-90 transition"
+      >
+        View Dashboard
+      </a>
+    </div>
+  </div>
+</section>
