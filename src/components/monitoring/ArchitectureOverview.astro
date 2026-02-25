@@ -1,0 +1,51 @@
+---
+/**
+ * Architecture Overview
+ * Static structural explanation of monitoring pipeline.
+ */
+---
+
+<section class="py-20 border-t border-outline/50 bg-surface">
+  <div class="container mx-auto px-4 max-w-4xl text-center">
+
+    <h2 class="text-2xl md:text-3xl font-semibold mb-12 text-content">
+      Monitoring Architecture
+    </h2>
+
+    <div class="flex flex-col md:flex-row items-center justify-center gap-8 text-sm md:text-base text-content-light">
+
+      <div class="flex flex-col items-center">
+        <div class="font-medium text-content mb-2">Browser</div>
+        <div>Telemetry Script</div>
+      </div>
+
+      <div class="text-content-light">→</div>
+
+      <div class="flex flex-col items-center">
+        <div class="font-medium text-content mb-2">API</div>
+        <div>api.protowebstudio.com</div>
+      </div>
+
+      <div class="text-content-light">→</div>
+
+      <div class="flex flex-col items-center">
+        <div class="font-medium text-content mb-2">Risk Engine</div>
+        <div>Deterministic Scoring</div>
+      </div>
+
+      <div class="text-content-light">→</div>
+
+      <div class="flex flex-col items-center">
+        <div class="font-medium text-content mb-2">Dashboard</div>
+        <div>Operational Control Layer</div>
+      </div>
+
+    </div>
+
+    <div class="mt-16 text-sm text-content-light max-w-2xl mx-auto">
+      All events are token-authenticated, timestamp-validated,
+      and idempotently processed before risk evaluation.
+    </div>
+
+  </div>
+</section>

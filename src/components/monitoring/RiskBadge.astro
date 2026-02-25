@@ -1,0 +1,39 @@
+---
+import { getRiskMeta } from '../../lib/domain/risk-model';
+
+interface Props {
+  level: "low" | "medium" | "high" | "critical";
+  score: number;
+}
+
+const { level, score } = Astro.props;
+
+const meta = getRiskMeta(level);
+---
+
+<div
+  class={`inline-flex items-center gap-3 px-6 py-4 rounded-xl border border-outline bg-surface shadow-sm`}
+>
+  <div class="text-3xl font-bold text-content">
+    {score}
+  </div>
+
+  <div class="flex flex-col">
+    <span
+      class={`text-sm font-semibold ${
+        meta.color === "red"
+          ? "text-red-600"
+          : meta.color === "orange"
+          ? "text-orange-500"
+          : meta.color === "yellow"
+          ? "text-yellow-500"
+          : "text-green-600"
+      }`}
+    >
+      {meta.label}
+    </span>
+    <span class="text-xs text-content-light uppercase tracking-wide">
+      Risk Level
+    </span>
+  </div>
+</div>

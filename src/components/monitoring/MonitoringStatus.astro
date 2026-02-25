@@ -1,0 +1,63 @@
+---
+import RiskBadge from './RiskBadge.astro';
+import StatusDot from '../shared/StatusDot.astro';
+
+interface Props {
+  riskScore: number;
+  riskLevel: "low" | "medium" | "high" | "critical";
+  windowSize: number;
+  lastEventAt: string | null;
+  status: "active" | "inactive";
+}
+
+const {
+  riskScore,
+  riskLevel,
+  windowSize,
+  lastEventAt,
+  status,
+} = Astro.props;
+---
+
+<section class="py-20 border-t border-b border-outline bg-surface">
+  <div class="container mx-auto px-4 max-w-5xl">
+
+    <div class="mb-10">
+      <h2 class="text-sm font-semibold tracking-widest uppercase text-content-light">
+        Monitoring Status
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+
+      <!-- Left: System State -->
+      <div class="space-y-6">
+
+        <div class="flex items-center gap-3">
+          <StatusDot status={status} />
+          <span class="text-base font-medium text-content">
+            {status === "active" ? "Telemetry Active" : "Telemetry Inactive"}
+          </span>
+        </div>
+
+        <div class="text-sm text-content-light space-y-2">
+          <div>
+            <span class="text-content">Window:</span> {windowSize}s
+          </div>
+          <div>
+            <span class="text-content">Last Event:</span>{" "}
+            {lastEventAt ? lastEventAt : "No events recorded"}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Risk Signal -->
+      <div class="flex items-start md:justify-end">
+        <RiskBadge level={riskLevel} score={riskScore} />
+      </div>
+
+    </div>
+
+  </div>
+</section>
