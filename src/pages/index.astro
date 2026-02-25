@@ -7,6 +7,33 @@ import MonitoringStatus from '../components/monitoring/MonitoringStatus.astro';
 import ArchitectureOverview from '../components/monitoring/ArchitectureOverview.astro';
 import SecurityControls from '../components/monitoring/SecurityControls.astro';
 import { sendTelemetry } from '../lib/system/telemetry';
+import { getRiskLevel } from '../lib/domain/risk-model';
+
+const SITE_SLUG = "test-site";
+
+let riskScore = 0;
+let riskLevel: "low" | "medium" | "high" | "critical" = "low";
+let windowSize = 0;
+let lastEventAt: string | null = null;
+let status: "active" | "inactive" = "inactive";
+
+try {
+  const response = await fetch(
+    `https://api.protowebstudio.com/api/public-risk/${SITE_SLUG}`
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+
+    riskScore = data.score ?? 0;
+    riskLevel = getRiskLevel(riskScore);
+    windowSize = data.window_size ?? 0;
+    lastEventAt = data.computed_at ?? null;
+    status = "active";
+  }
+} catch (error) {
+  status = "inactive";
+}
 ---
 
 <BaseLayout title="Sentinel">
@@ -21,15 +48,14 @@ import { sendTelemetry } from '../lib/system/telemetry';
     />
 
     <MonitoringStatus
-      riskScore={60}
-      riskLevel="high"
-      windowSize={60}
-      lastEventAt="Just now"
-      status="active"
+      riskScore={riskScore}
+      riskLevel={riskLevel}
+      windowSize={windowSize}
+      lastEventAt={lastEventAt}
+      status={status}
     />
 
     <ArchitectureOverview />
-
     <SecurityControls />
   </main>
 
