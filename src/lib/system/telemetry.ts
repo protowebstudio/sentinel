@@ -7,17 +7,16 @@ export async function sendTelemetry() {
         await fetch("https://api.protowebstudio.com/api/ingest", {
             method: "POST",
             headers: {
+                "Accept": "application/json",
                 "Content-Type": "application/json",
                 "X-Site-Token": SITE_TOKEN,
                 "X-Timestamp": Math.floor(Date.now() / 1000).toString(),
             },
             body: JSON.stringify({
-                event_id: crypto.randomUUID(),
-                event_type: "page_load",
-                url: window.location.href,
-                response_time_ms: Math.round(performance.now()),
-                status_code: 200,
-            }),
+                severity: "Low",
+                event_timestamp: new Date().toISOString(),
+                message: "page_load - " + window.location.href,
+              }),
         });
     } catch (error) {
         console.error("Telemetry error:", error);
