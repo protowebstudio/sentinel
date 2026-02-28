@@ -1,9 +1,91 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Read-only public endpoint (no auth, no secrets).
+const HEALTH_URL = "https://api.protowebstudio.com/api/health";
+
+type HealthResponse = {
+  status: string;
+  timestamp: string;
+};
+
+let health: HealthResponse | null = null;
+let errorMsg: string | null = null;
+
+try {
+  const res = await fetch(HEALTH_URL, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!res.ok) {
+    errorMsg = `Health probe failed: HTTP ${res.status}`;
+  } else {
+    const data = (await res.json()) as unknown;
+
+    // Fail-closed schema validation (minimal).
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      "status" in data &&
+      "timestamp" in data &&
+      typeof (data as any).status === "string" &&
+      typeof (data as any).timestamp === "string"
+    ) {
+      health = { status: (data as any).status, timestamp: (data as any).timestamp };
+    } else {
+      errorMsg = "Health probe returned unexpected schema.";
+    }
+  }
+} catch (err) {
+  errorMsg = "Health probe request failed (network/CORS).";
+}
 ---
+
 <BaseLayout title="Live Demo">
   <main class="max-w-5xl mx-auto px-6 py-16 text-white">
-    <h1 class="text-3xl font-bold mb-4">Live Demo</h1>
-    <p class="text-slate-300">Pending content.</p>
+    <h1 class="text-3xl font-bold mb-2">Live Demo</h1>
+    <p class="text-slate-300 mb-8">
+      Sentinel is read-only. This page performs a public health probe to the execution core.
+    </p>
+
+    <section class="border border-slate-700 rounded-lg p-6 bg-slate-900/40">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-xl font-semibold">API Health</h2>
+        <span class="text-xs text-slate-400 break-all">{HEALTH_URL}</span>
+      </div>
+
+      {health ? (
+        <div class="mt-4 space-y-3">
+          <div class="flex items-center justify-between border-t border-slate-800 pt-4">
+            <div class="text-slate-300">Status</div>
+            <div class="font-mono">{health.status}</div>
+          </div>
+          <div class="flex items-center justify-between border-t border-slate-800 pt-4">
+            <div class="text-slate-300">Timestamp (UTC)</div>
+            <div class="font-mono">{health.timestamp}</div>
+          </div>
+        </div>
+      ) : errorMsg ? (
+        <div class="mt-4 border border-red-700/60 bg-red-950/40 rounded-md p-4">
+          <div class="font-semibold text-red-200">Fail-closed</div>
+          <div class="text-sm text-red-200/90 mt-1">{errorMsg}</div>
+          <div class="text-xs text-red-200/70 mt-3">
+            No tokens. No privileged calls. No simulated data.
+          </div>
+        </div>
+      ) : (
+        <div class="mt-4 text-slate-300">Loading…</div>
+      )}
+    </section>
+
+    <section class="mt-10 text-sm text-slate-400">
+      <div class="font-semibold text-slate-300 mb-2">Constraints</div>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Read-only GET requests only.</li>
+        <li>No authentication, no token handling, no state mutation.</li>
+        <li>If the probe fails or schema changes, Sentinel fails closed.</li>
+      </ul>
+    </section>
   </main>
 </BaseLayout>
