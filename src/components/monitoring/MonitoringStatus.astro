@@ -6,8 +6,8 @@ interface Props {
   riskScore: number;
   riskLevel: "low" | "medium" | "high" | "critical";
   windowSize: number;
-  lastEventAt: string | null;
-  status: "active" | "inactive";
+  lastEventAt: string | null; // In Sentinel: this is the last health-check timestamp (UTC)
+  status: "active" | "inactive"; // In Sentinel: execution-core health status
 }
 
 const {
@@ -17,8 +17,10 @@ const {
   lastEventAt,
   status,
 } = Astro.props;
----
 
+const statusLabel = status === "active" ? "Execution Core Online" : "Execution Core Offline";
+const timestampLabel = lastEventAt ? lastEventAt : "No probe recorded";
+---
 <section class="py-20 border-t border-b border-outline bg-surface">
   <div class="container mx-auto px-4 max-w-5xl">
 
@@ -30,29 +32,28 @@ const {
 
     <div class="grid md:grid-cols-2 gap-12 items-start">
 
-      <!-- Left: System State -->
+      <!-- Left: System State (read-only probe) -->
       <div class="space-y-6">
-
         <div class="flex items-center gap-3">
           <StatusDot status={status} />
           <span class="text-base font-medium text-content">
-            {status === "active" ? "Telemetry Active" : "Telemetry Inactive"}
+            {statusLabel}
           </span>
         </div>
 
         <div class="text-sm text-content-light space-y-2">
           <div>
-            <span class="text-content">Window:</span> {windowSize}s
+            <span class="text-content">Last Check (UTC):</span>{" "}
+            {timestampLabel}
           </div>
           <div>
-            <span class="text-content">Last Event:</span>{" "}
-            {lastEventAt ? lastEventAt : "No events recorded"}
+            <span class="text-content">Risk Signal:</span>{" "}
+            {windowSize === 0 ? "Not wired (read-only demo)" : `${windowSize}s window`}
           </div>
         </div>
-
       </div>
 
-      <!-- Right: Risk Signal -->
+      <!-- Right: Risk Signal (may be placeholder until Phase 3.2 wiring) -->
       <div class="flex items-start md:justify-end">
         <RiskBadge level={riskLevel} score={riskScore} />
       </div>

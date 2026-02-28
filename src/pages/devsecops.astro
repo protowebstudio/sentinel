@@ -1,9 +1,45 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
+
 <BaseLayout title="DevSecOps">
   <main class="max-w-5xl mx-auto px-6 py-16 text-white">
-    <h1 class="text-3xl font-bold mb-4">DevSecOps Pipeline</h1>
-    <p class="text-slate-300">Pending content.</p>
+    <h1 class="ui-h1 mb-4">Governance & Risk Model</h1>
+    <p class="ui-muted mb-10">
+      The system is governed by proof-gated changes and deterministic behavior. Risk is bounded, reproducible, and explainable.
+    </p>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">Governance Model</h2>
+      <ul class="list-disc pl-5 ui-muted space-y-2">
+        <li><span class="text-white font-semibold">Fail-closed:</span> no advancement without verifiable proof artifacts.</li>
+        <li><span class="text-white font-semibold">Deterministic deploy discipline:</span> changes flow through version control and reproducible builds.</li>
+        <li><span class="text-white font-semibold">Surface minimization:</span> Sentinel stays read-only; privileged operations stay in the execution core.</li>
+        <li><span class="text-white font-semibold">Spec ↔ implementation alignment:</span> when code changes, scope docs are updated to match.</li>
+      </ul>
+    </section>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">DevSecOps Pipeline (Conceptual)</h2>
+      <ol class="list-decimal pl-5 ui-muted space-y-2">
+        <li>Work happens in a feature branch.</li>
+        <li>Changes are validated locally (build/test) before merge.</li>
+        <li>CI gates enforce reproducibility and prevent drift.</li>
+        <li>Deployment is deterministic per domain (API, WWW, Sentinel) with isolated responsibilities.</li>
+      </ol>
+    </section>
+
+    <section class="ui-card">
+      <h2 class="ui-h2 mb-3">Risk Model (Bounded & Reproducible)</h2>
+      <div class="ui-muted space-y-3">
+        <p>
+          The risk signal is designed to be explainable: a bounded score (0–100) derived from deterministic severity weights over a fixed window.
+          The goal is not prediction; it is repeatable measurement.
+        </p>
+        <p>
+          Sentinel does not compute risk. It presents narrative and proofs. The execution core performs ingestion validation and risk computation.
+        </p>
+      </div>
+    </section>
   </main>
 </BaseLayout>
