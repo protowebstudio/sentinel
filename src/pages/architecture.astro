@@ -1,0 +1,70 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Architecture">
+  <main class="max-w-5xl mx-auto px-6 py-16 text-white">
+    <h1 class="ui-h1 mb-4">System Architecture</h1>
+    <p class="ui-muted mb-10">
+      Sentinel is the institutional, read-only demonstration surface. It explains the system and proves execution-core availability without handling auth or tokens.
+    </p>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">1) Problem Definition</h2>
+      <div class="ui-muted space-y-3">
+        <p>
+          Operational security and observability fail most often not because tools are missing, but because systems drift:
+          misconfiguration, inconsistent deploy practices, unclear ownership boundaries, and non-deterministic “monitoring signals”
+          that cannot be reproduced or audited.
+        </p>
+        <p>
+          The failure class addressed here is <span class="text-white font-semibold">bounded, verifiable operational risk</span>:
+          the system must accept telemetry, compute a deterministic risk signal, and expose it in a way that is consistent across domains
+          and resilient to configuration drift.
+        </p>
+        <p>
+          The design goal is not maximal features. It is <span class="text-white font-semibold">institution-grade correctness</span>:
+          a minimal surface area that can be proven safe, reproduced, and explained.
+        </p>
+      </div>
+    </section>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">2) System Boundary</h2>
+      <div class="ui-muted space-y-3">
+        <p><span class="text-white font-semibold">Inside:</span> ingestion validation, deterministic risk computation (0–100), snapshot persistence, and read-only presentation of proofs.</p>
+        <p><span class="text-white font-semibold">Outside (non-goals):</span> privileged action orchestration from Sentinel, token handling in Sentinel, or “AI scoring” that can’t be reproduced.</p>
+      </div>
+    </section>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">3) Domain Separation</h2>
+      <div class="ui-muted space-y-4">
+        <div>
+          <div class="text-white font-semibold">API — Execution Core</div>
+          <div>State mutation, auth, ingestion, risk computation, and hardened security controls live here.</div>
+        </div>
+        <div>
+          <div class="text-white font-semibold">WWW — Product Surface</div>
+          <div>User-facing SaaS UI that interacts with the API using standard authenticated flows.</div>
+        </div>
+        <div>
+          <div class="text-white font-semibold">Sentinel — Institutional Demonstration Surface</div>
+          <div>Read-only narrative + verifiable proofs (e.g., public health probe). No tokens. No mutation.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ui-card">
+      <h2 class="ui-h2 mb-3">4) Core Workflow (conceptual)</h2>
+      <ol class="list-decimal pl-5 ui-muted space-y-2">
+        <li>User registers / logs in (WWW → API).</li>
+        <li>User creates a site (WWW → API).</li>
+        <li>Site token exists only for ingestion clients (API-issued; not shown in UI).</li>
+        <li>Telemetry is ingested and validated (clients → API).</li>
+        <li>API computes bounded deterministic risk (0–100) and persists snapshots.</li>
+        <li>WWW shows snapshots; Sentinel explains and proves system properties read-only.</li>
+      </ol>
+    </section>
+  </main>
+</BaseLayout>

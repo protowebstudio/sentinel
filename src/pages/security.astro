@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Security">
+  <main class="max-w-5xl mx-auto px-6 py-16 text-white">
+    <h1 class="ui-h1 mb-4">Security Posture</h1>
+    <p class="ui-muted mb-10">
+      The system is designed for bounded, reproducible operational risk measurement. Security hardening is treated as a first-order product feature, not an afterthought.
+    </p>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">Security Posture Evolution</h2>
+      <div class="ui-muted space-y-3">
+        <p>
+          The security baseline was established by tightening the execution core first (API), then constraining the product surface (WWW),
+          and finally enforcing a strict read-only stance for the institutional layer (Sentinel).
+        </p>
+        <p>
+          This order prevents “presentation creep” from becoming a privileged access path and keeps the attack surface bounded.
+        </p>
+      </div>
+    </section>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">Execution Core Controls (API)</h2>
+      <ul class="list-disc pl-5 ui-muted space-y-2">
+        <li>Fail-closed production configuration (no debug behavior in production).</li>
+        <li>Rate limiting on sensitive endpoints (auth and ingestion) to reduce abuse.</li>
+        <li>Generic authentication failure semantics (no credential enumeration).</li>
+        <li>Security headers for basic browser hardening (anti-framing, referrer policy).</li>
+        <li>Public health probe for availability verification.</li>
+      </ul>
+    </section>
+
+    <section class="ui-card mb-10">
+      <h2 class="ui-h2 mb-3">Product Surface Controls (WWW)</h2>
+      <ul class="list-disc pl-5 ui-muted space-y-2">
+        <li>Route guards enforce a non-ambiguous auth boundary.</li>
+        <li>401 handling is fail-closed (session invalidation; no silent failures).</li>
+        <li>No secret rendering (tokens are never displayed in UI).</li>
+      </ul>
+    </section>
+
+    <section class="ui-card">
+      <h2 class="ui-h2 mb-3">Sentinel Constraints (Institutional Layer)</h2>
+      <div class="ui-muted space-y-3">
+        <p>
+          Sentinel is deliberately constrained: it does not authenticate users, does not store tokens, and does not perform mutation.
+          It may call only public, read-only endpoints (currently: <span class="text-white font-semibold">GET /api/health</span>).
+        </p>
+        <p>
+          If any proof cannot be obtained safely, Sentinel fails closed (explicitly shows unavailability rather than simulating data).
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
