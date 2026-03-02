@@ -1,0 +1,14 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import ProofGrid from "../components/proofs/ProofGrid.astro";
+import { fetchProofFromAllowlist } from "../lib/proofs/fetch";
+
+const proofs = await Promise.all([
+  fetchProofFromAllowlist("API Health", "apiHealth")
+]);
+---
+<PageLayout title="Proofs">
+  <h1>Proofs</h1>
+  <p>Read-only proof wall. No auth, no tokens, no writes.</p>
+  <ProofGrid proofs={proofs} />
+</PageLayout>
