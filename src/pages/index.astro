@@ -40,17 +40,13 @@ try {
     />
   <Chapters />
 
-      riskScore={0}
-      riskLevel={"low"}
-      windowSize={0}
-      lastEventAt={lastCheckedAt}
-      status={status}
-    />
-
+    <MonitoringStatus status={status} lastCheckedAt={lastCheckedAt} />
     <ArchitectureOverview />
     <SecurityControls />
   </main>
 
   <Footer />
 </BaseLayout>
+
+
 
