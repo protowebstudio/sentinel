@@ -1,24 +1,104 @@
 ---
-import MainMenu from '@components/menus/MainMenu.astro';
+const pathname = Astro.url.pathname;
 
-interface Props {
-    class?: string;
-}
+const nav = [
+  { label: "Home", href: "/" },
+  { label: "Component Library", href: "/component-library" },
+];
 
-const { class: className } = Astro.props;
+const actions = [
+  { label: "Read TFM (PDF)", href: "/TFM.pdf", external: false },
+  { label: "GitHub", href: "https://github.com/", external: true },
+];
+
+const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 ---
 
-<header class:list={["px-4 py-4", className]}>
-    <div class="max-w-5xl mx-auto flex items-center justify-between">
-        <!-- You can add your logo here -->
-        <a href="/" class="font-semibold text-lg text-content no-underline cursor-pointer">
-            My Site
+<header class="py-4 bg-white border-b border-gray-200 sm:py-5">
+  <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+    <nav class="flex items-center justify-between">
+      <!-- Brand -->
+      <div class="flex shrink-0">
+        <a href="/" class="flex items-center gap-3">
+          <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-900 text-white font-extrabold">P</span>
+          <span class="text-base font-semibold text-gray-900">Protoweb Studio</span>
         </a>
-        
-        <!-- Menu Area (Right Aligned) -->
-        <MainMenu />
-    </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div class="flex lg:hidden">
+        <details class="relative">
+          <summary class="list-none inline-flex items-center justify-center p-2 rounded-md text-gray-900 hover:bg-gray-100 cursor-pointer">
+            <span class="sr-only">Open menu</span>
+            <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </summary>
+
+          <div class="absolute right-0 mt-2 w-64 rounded-xl border border-gray-200 bg-white shadow-lg p-2 z-50">
+            <div class="grid gap-1">
+              {nav.map((item) => (
+                <a
+                  href={item.href}
+                  class={`px-3 py-2 rounded-lg text-base font-medium transition-all duration-200 hover:bg-gray-50 ${
+                    isActive(item.href) ? "text-indigo-600" : "text-gray-900"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+
+            <hr class="my-2 border-gray-200" />
+
+            <div class="grid gap-1">
+              {actions.map((a) => (
+                <a
+                  href={a.href}
+                  target={a.external ? "_blank" : undefined}
+                  rel={a.external ? "noopener noreferrer" : undefined}
+                  class="px-3 py-2 rounded-lg text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-50 hover:text-indigo-600"
+                >
+                  {a.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- Desktop nav -->
+      <div class="hidden lg:items-center lg:justify-start lg:ml-16 lg:mr-auto lg:space-x-10 lg:flex">
+        {nav.map((item) => (
+          <a
+            href={item.href}
+            class={`text-base font-medium transition-all duration-200 hover:text-indigo-600 ${
+              isActive(item.href) ? "text-indigo-600" : "text-gray-900"
+            }`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <!-- Desktop actions -->
+      <div class="hidden lg:flex lg:items-center lg:justify-end lg:space-x-10">
+        <a
+          href="/TFM.pdf"
+          class="text-base font-medium text-gray-900 transition-all duration-200 hover:text-indigo-600"
+        >
+          Read TFM (PDF)
+        </a>
+
+        <a
+          href="https://github.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center px-4 py-2 text-sm font-bold leading-6 text-white transition-all duration-200 bg-gray-900 rounded-md hover:bg-gray-800"
+        >
+          GitHub
+        </a>
+      </div>
+    </nav>
+  </div>
 </header>
-
-
-
