@@ -1,7 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import Header from '../components/layout/Header.astro';
-import Footer from '../components/layout/Footer.astro';
+import Header from '@components/layout/Header.astro';
+import Footer from '@components/layout/Footer.astro';
 
 const { frontmatter = {} } = Astro.props;
 
@@ -43,4 +43,5 @@ const baseProps = {
   </main>
   <Footer />
 </BaseLayout>
+
 

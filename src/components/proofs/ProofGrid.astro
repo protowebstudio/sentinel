@@ -1,8 +1,0 @@
----
-import ProofWidget from "./ProofWidget.astro";
-import type { ProofResult } from "../../lib/proofs/types";
-const { proofs } = Astro.props as { proofs: ProofResult[] };
----
-<section class="grid">
-  {proofs.map((p) => <ProofWidget proof={p} />)}
-</section>

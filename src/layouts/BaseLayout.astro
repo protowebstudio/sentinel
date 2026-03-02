@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import CustomScripts from '../components/CustomScripts.astro';
+import CustomScripts from '@components/CustomScripts.astro';
 
 interface Props {
   title: string;
@@ -143,3 +143,4 @@ const canonical = canonicalUrl && /^https?:\/\//.test(canonicalUrl)
     )}
   </body>
 </html>
+
