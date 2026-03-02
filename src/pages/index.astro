@@ -6,6 +6,7 @@ import HeroMonitoring from "../components/monitoring/HeroMonitoring.astro";
 import MonitoringStatus from "../components/monitoring/MonitoringStatus.astro";
 import ArchitectureOverview from "../components/monitoring/ArchitectureOverview.astro";
 import SecurityControls from "../components/monitoring/SecurityControls.astro";
+import Chapters from "../components/Chapters.astro";
 
 const HEALTH_URL = "https://api.protowebstudio.com/api/health";
 
@@ -37,8 +38,8 @@ try {
       environment="production"
       dashboardUrl="https://www.protowebstudio.com/dashboard"
     />
+  <Chapters />
 
-    <MonitoringStatus
       riskScore={0}
       riskLevel={"low"}
       windowSize={0}
@@ -52,3 +53,4 @@ try {
 
   <Footer />
 </BaseLayout>
+

@@ -1,0 +1,22 @@
+---
+import Feature from "./Feature.astro";
+
+const chapters = [
+  { title: "Proofs", description: "Live proof wall (health + headers). Read-only.", iconName: "ShieldCheck", href: "/proofs", badge: "PROOFS" },
+  { title: "Architecture", description: "Domain separation + system boundaries.", iconName: "LayoutGrid", href: "/architecture", badge: "SPLIT" },
+  { title: "Security", description: "Controls, posture, and hardening story.", iconName: "Lock", href: "/security", badge: "SEC" },
+  { title: "DevSecOps", description: "Build/deploy workflow + operational discipline.", iconName: "GitBranch", href: "/devsecops", badge: "OPS" },
+  { title: "Live Demo", description: "What’s running and what it demonstrates.", iconName: "Activity", href: "/live-demo", badge: "DEMO" },
+];
+---
+
+<section class="my-12">
+  <h2 class="text-xl font-semibold">Chapters</h2>
+  <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {chapters.map((c) => (
+      <a href={c.href} class="block focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded-xl">
+        <Feature title={c.title} description={c.description} iconName={c.iconName} badge={c.badge} />
+      </a>
+    ))}
+  </div>
+</section>
