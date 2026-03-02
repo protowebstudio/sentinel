@@ -1,52 +1,323 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
-import HeroMonitoring from "../components/monitoring/HeroMonitoring.astro";
-import MonitoringStatus from "../components/monitoring/MonitoringStatus.astro";
-import ArchitectureOverview from "../components/monitoring/ArchitectureOverview.astro";
-import SecurityControls from "../components/monitoring/SecurityControls.astro";
-import Chapters from "../components/Chapters.astro";
-
-const HEALTH_URL = "https://api.protowebstudio.com/api/health";
-
-let status: "active" | "inactive" = "inactive";
-let lastCheckedAt: string | null = null;
-
-try {
-  const response = await fetch(HEALTH_URL, { headers: { Accept: "application/json" } });
-
-  if (response.ok) {
-    const data = await response.json();
-    if (data && typeof data.status === "string" && typeof data.timestamp === "string") {
-      status = data.status === "ok" ? "active" : "inactive";
-      lastCheckedAt = data.timestamp;
-    }
-  }
-} catch {
-  status = "inactive";
-}
+import Header from "../components/layout/Header.astro";
+import Footer from "../components/layout/Footer.astro";
 ---
 
-<BaseLayout title="Sentinel">
+<BaseLayout title="Protoweb Studio — TFM Presentation">
   <Header />
 
   <main id="main-content">
-    <HeroMonitoring
-      title="Sentinel — Institutional Demonstration Surface"
-      subtitle="Sentinel is read-only. It validates execution-core availability via a public health probe and presents institutional architecture and security narrative."
-      environment="production"
-      dashboardUrl="https://www.protowebstudio.com/dashboard"
-    />
-  <Chapters />
+    <!-- HERO -->
+    <section>
+      <header class="bg-gray-900 border-b border-gray-800">
+        <div class="px-4 mx-auto sm:px-6 lg:px-8 xl:px-12">
+          <div class="flex items-center justify-between h-16 lg:h-[72px]">
+            <div class="flex items-center flex-shrink-0">
+              <a href="#top" class="inline-flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gray-800 text-white font-extrabold">
+                  P
+                </span>
+                <span class="text-white font-semibold">Protoweb Studio</span>
+              </a>
+            </div>
 
-    <MonitoringStatus status={status} lastCheckedAt={lastCheckedAt} />
-    <ArchitectureOverview />
-    <SecurityControls />
+            <nav class="hidden lg:flex lg:justify-center lg:space-x-10 xl:space-x-14">
+              <a href="#overview" class="text-base font-medium text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white hover:text-white">
+                Overview
+              </a>
+              <a href="#architecture" class="text-base font-medium text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white hover:text-white">
+                Architecture
+              </a>
+              <a href="#features" class="text-base font-medium text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white hover:text-white">
+                Features
+              </a>
+              <a href="#method" class="text-base font-medium text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white hover:text-white">
+                Method
+              </a>
+              <a href="#screenshots" class="text-base font-medium text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white hover:text-white">
+                Screenshots
+              </a>
+              <a href="#links" class="text-base font-medium text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white hover:text-white">
+                Links
+              </a>
+            </nav>
+
+            <div class="flex items-center justify-end space-x-3">
+              <a
+                href="/TFM.pdf"
+                class="hidden sm:inline-flex items-center justify-center px-3 py-2 text-sm font-bold leading-6 text-gray-900 transition-all duration-200 bg-white border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white hover:bg-gray-200"
+              >
+                Read TFM (PDF)
+              </a>
+
+              <a
+                href="https://github.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center px-3 py-2 text-sm font-bold leading-6 text-white transition-all duration-200 bg-transparent border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-gray-700 hover:bg-gray-700"
+              >
+                GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div id="top" class="relative py-12 bg-gray-900 sm:py-16 lg:py-20 xl:pt-28 xl:pb-36">
+        <div class="absolute inset-0 hidden lg:block">
+          <img
+            class="object-cover object-right-bottom w-full h-full opacity-40"
+            src="/images/hero-bg.png"
+            alt=""
+          />
+        </div>
+
+        <div class="relative px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+          <div class="max-w-xl mx-auto text-center lg:max-w-2xl lg:text-left lg:mx-0">
+            <p class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-800 text-gray-200 text-sm">
+              <span class="w-2 h-2 rounded-full bg-green-400"></span>
+              TFM Presentation • Read-only
+            </p>
+
+            <h1 class="mt-6 text-3xl font-bold text-white sm:text-4xl xl:text-5xl xl:leading-tight">
+              Protoweb Studio — Monitoring MVP <span class="text-gray-300">(TFM)</span>
+            </h1>
+
+            <p class="mt-6 text-base font-normal leading-7 text-gray-400 lg:max-w-xl">
+              A one-page academic overview of the project: objective, architecture, security boundaries, and what was delivered.
+              No live data, no metrics, no proofs.
+            </p>
+
+            <div class="flex items-center justify-center mt-8 space-x-5 xl:mt-12 lg:justify-start">
+              <a
+                href="/TFM.pdf"
+                class="inline-flex items-center justify-center px-3 py-3 text-base font-bold leading-7 text-gray-900 transition-all duration-200 bg-white border border-transparent rounded-md sm:px-6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-white hover:bg-gray-200"
+              >
+                Read the TFM (PDF)
+              </a>
+
+              <a
+                href="#overview"
+                class="inline-flex items-center justify-center px-2 py-3 text-base font-bold leading-7 text-white transition-all duration-200 bg-transparent border border-transparent rounded-md sm:px-4 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-gray-700 hover:bg-gray-700"
+              >
+                Jump to Overview
+              </a>
+            </div>
+
+            <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="bg-gray-800/60 border border-gray-700 rounded-lg p-4">
+                <p class="text-xs text-gray-400">Domain model</p>
+                <p class="text-white font-semibold mt-1">API / WWW / Sentinel</p>
+              </div>
+              <div class="bg-gray-800/60 border border-gray-700 rounded-lg p-4">
+                <p class="text-xs text-gray-400">Scope</p>
+                <p class="text-white font-semibold mt-1">MVP (frozen)</p>
+              </div>
+              <div class="bg-gray-800/60 border border-gray-700 rounded-lg p-4">
+                <p class="text-xs text-gray-400">Posture</p>
+                <p class="text-white font-semibold mt-1">DOC (presentation)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 lg:hidden">
+          <img class="object-cover w-full h-full opacity-40" src="/images/hero-bg.png" alt="" />
+        </div>
+      </div>
+    </section>
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="bg-white">
+      <div class="container mx-auto px-4 py-16 max-w-7xl">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Overview</h2>
+        <p class="mt-4 text-gray-600 max-w-3xl">
+          Short, readable summary of the TFM: what problem was addressed, the objective, and the delivered outcome.
+        </p>
+
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Problem</h3>
+            <p class="mt-2 text-gray-600">
+              Monitoring and security posture visibility for small deployments is often fragmented and hard to operationalize.
+            </p>
+          </div>
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Objective</h3>
+            <p class="mt-2 text-gray-600">
+              Build an MVP platform that collects signals, scores risk deterministically, and exposes results via a dashboard.
+            </p>
+          </div>
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Outcome</h3>
+            <p class="mt-2 text-gray-600">
+              A production-ready MVP: secure API engine + dashboard UI + documentation and deployment reproducibility.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section id="architecture" class="bg-gray-50">
+      <div class="container mx-auto px-4 py-16 max-w-7xl">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Architecture</h2>
+        <p class="mt-4 text-gray-600 max-w-3xl">
+          Clear domain separation: API is the only authority, WWW is the client dashboard, Sentinel is presentation-only.
+        </p>
+
+        <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <div class="border border-gray-200 bg-white rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Domain separation</h3>
+            <ul class="mt-4 space-y-3 text-gray-700">
+              <li><span class="font-semibold">api.protowebstudio.com</span> — engine (auth, ingestion, scoring, storage)</li>
+              <li><span class="font-semibold">www.protowebstudio.com</span> — dashboard + metrics UI (reads from API)</li>
+              <li><span class="font-semibold">sentinel.protowebstudio.com</span> — TFM presentation only (this site)</li>
+            </ul>
+
+            <p class="mt-4 text-sm text-gray-500">
+              Sentinel contains no live calls, no metrics, no proofs, no secrets.
+            </p>
+          </div>
+
+          <div class="border border-gray-200 bg-white rounded-2xl p-3">
+            <img
+              src="/images/architecture.png"
+              alt="Architecture diagram"
+              class="w-full rounded-xl"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="bg-white">
+      <div class="container mx-auto px-4 py-16 max-w-7xl">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Key Features (Explained)</h2>
+        <p class="mt-4 text-gray-600 max-w-3xl">
+          This section explains the functional scope of the MVP without exposing or calling any live services.
+        </p>
+
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Secure API core</h3>
+            <p class="mt-2 text-gray-600">Authentication, least privilege, rate-limits, and a strict contract boundary.</p>
+          </div>
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Deterministic scoring</h3>
+            <p class="mt-2 text-gray-600">A clear 0–100 risk score built from weighted inputs and reproducible rules.</p>
+          </div>
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Ingestion model</h3>
+            <p class="mt-2 text-gray-600">Signals are validated, normalized, stored, and converted into snapshots.</p>
+          </div>
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Dashboard UI</h3>
+            <p class="mt-2 text-gray-600">The WWW surface renders metrics and history from the API (separate domain).</p>
+          </div>
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Deployment reproducibility</h3>
+            <p class="mt-2 text-gray-600">Repeatable builds, minimal downtime changes, and operator-friendly runbooks.</p>
+          </div>
+          <div class="border border-gray-200 rounded-2xl p-6">
+            <h3 class="font-bold text-gray-900">Security hygiene</h3>
+            <p class="mt-2 text-gray-600">Nginx correctness, Cloudflare rules, and env/permissions hardening.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- METHOD -->
+    <section id="method" class="bg-gray-50">
+      <div class="container mx-auto px-4 py-16 max-w-7xl">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Method</h2>
+        <p class="mt-4 text-gray-600 max-w-3xl">
+          A short timeline showing how the project was delivered.
+        </p>
+
+        <ol class="mt-10 space-y-4">
+          <li class="bg-white border border-gray-200 rounded-2xl p-6">
+            <p class="text-sm text-gray-500">Phase 1</p>
+            <p class="mt-1 font-semibold text-gray-900">Architecture + scope freeze</p>
+            <p class="mt-2 text-gray-600">Define domain separation and MVP scope to avoid uncontrolled expansion.</p>
+          </li>
+          <li class="bg-white border border-gray-200 rounded-2xl p-6">
+            <p class="text-sm text-gray-500">Phase 2</p>
+            <p class="mt-1 font-semibold text-gray-900">Engine build (API)</p>
+            <p class="mt-2 text-gray-600">Auth, ingestion validation, deterministic scoring, persistence.</p>
+          </li>
+          <li class="bg-white border border-gray-200 rounded-2xl p-6">
+            <p class="text-sm text-gray-500">Phase 3</p>
+            <p class="mt-1 font-semibold text-gray-900">Dashboard + integration</p>
+            <p class="mt-2 text-gray-600">WWW consumes API to show metrics, snapshots, and status.</p>
+          </li>
+          <li class="bg-white border border-gray-200 rounded-2xl p-6">
+            <p class="text-sm text-gray-500">Phase 4</p>
+            <p class="mt-1 font-semibold text-gray-900">Production remediation</p>
+            <p class="mt-2 text-gray-600">Nginx hygiene, Cloudflare reliability, env/permissions correctness.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- SCREENSHOTS -->
+    <section id="screenshots" class="bg-white">
+      <div class="container mx-auto px-4 py-16 max-w-7xl">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Screenshots</h2>
+        <p class="mt-4 text-gray-600 max-w-3xl">
+          Static screenshots only (no live embeds).
+        </p>
+
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <figure class="border border-gray-200 rounded-2xl overflow-hidden">
+            <img src="/images/screenshots/shot-01.png" alt="Screenshot 1" class="w-full h-56 object-cover" />
+            <figcaption class="p-4 text-sm text-gray-600">Dashboard overview</figcaption>
+          </figure>
+          <figure class="border border-gray-200 rounded-2xl overflow-hidden">
+            <img src="/images/screenshots/shot-02.png" alt="Screenshot 2" class="w-full h-56 object-cover" />
+            <figcaption class="p-4 text-sm text-gray-600">Architecture / flow</figcaption>
+          </figure>
+          <figure class="border border-gray-200 rounded-2xl overflow-hidden">
+            <img src="/images/screenshots/shot-03.png" alt="Screenshot 3" class="w-full h-56 object-cover" />
+            <figcaption class="p-4 text-sm text-gray-600">Deployment / hardening</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS -->
+    <section id="links" class="bg-gray-50">
+      <div class="container mx-auto px-4 py-16 max-w-7xl">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Links</h2>
+        <p class="mt-4 text-gray-600 max-w-3xl">
+          Official references for the TFM deliverable.
+        </p>
+
+        <div class="mt-10 flex flex-col sm:flex-row gap-4">
+          <a
+            href="/TFM.pdf"
+            class="inline-flex items-center justify-center px-6 py-3 font-bold text-gray-900 bg-white border border-gray-200 rounded-xl hover:bg-gray-100 transition"
+          >
+            Download TFM (PDF)
+          </a>
+          <a
+            href="https://github.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center px-6 py-3 font-bold text-white bg-gray-900 rounded-xl hover:bg-gray-800 transition"
+          >
+            View GitHub
+          </a>
+        </div>
+
+        <p class="mt-6 text-sm text-gray-500">
+          Note: This site is a presentation layer only. It performs no live calls and exposes no operational data.
+        </p>
+      </div>
+    </section>
   </main>
 
   <Footer />
 </BaseLayout>
-
-
-
