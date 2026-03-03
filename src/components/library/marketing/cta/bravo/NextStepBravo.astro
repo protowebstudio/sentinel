@@ -1,0 +1,169 @@
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # MIRROR_SECTION__NextStepBravo__v1.ps1
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> Set-StrictMode -Version Latest
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $ErrorActionPreference = "Stop"
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $repoRoot = "C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel"
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if (-not (Test-Path -LiteralPath $repoRoot)) { throw "NOT FOUND: repoRoot=$repoRoot" }
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> Set-Location -LiteralPath $repoRoot
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $srcLiteral = "/mnt/data/00_file.txt"
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if (-not (Test-Path -LiteralPath $srcLiteral)) { throw "NOT FOUND: source=$srcLiteral" }
+Exception: NOT FOUND: source=/mnt/data/00_file.txt
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $section = Get-Content -LiteralPath $srcLiteral -Raw
+Get-Content: Cannot find path '/mnt/data/00_file.txt' because it does not exist.
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # Destination (recommended)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $destRel = "src\components\library\marketing\cta\bravo\NextStepBravo.astro"
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $destDir = Split-Path -Parent $destRel
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if (-not (Test-Path -LiteralPath $destDir)) {
+>>   New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+>>   Write-Host "WROTE: $destDir (created)"
+>> } else {
+>>   Write-Host "UPDATED: $destDir (exists)"
+>> }
+WROTE: src\components\library\marketing\cta\bravo (created)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # Idempotent write: mirror EXACT content
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $destExisting = if (Test-Path -LiteralPath $destRel) { Get-Content -LiteralPath $destRel -Raw } else { "" }
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if ($destExisting -ne $section) {
+>>   $section | Set-Content -LiteralPath $destRel -Encoding UTF8
+>>   Write-Host "WROTE: $destRel (mirrored verbatim)"
+>> } else {
+>>   Write-Host "UPDATED: $destRel (no-op; already mirrored)"
+>> }
+InvalidOperation: The variable '$section' cannot be retrieved because it has not been set.
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # Integration point (recommended): src/pages/index.astro
+
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $indexRel = "src\pages\index.astro"
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if (-not (Test-Path -LiteralPath $indexRel)) { throw "NOT FOUND: $indexRel" }
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $index = Get-Content -LiteralPath $indexRel -Raw
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $importLine = 'import NextStepBravo from "../components/library/marketing/cta/bravo/NextStepBravo.astro";'
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $hasImport = $index -match [regex]::Escape($importLine)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $hasRender = $index -match "<NextStepBravo\s*/>"
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # Ensure there is Astro frontmatter; if missing, create it at top.
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if ($index -notmatch "^\s*---") {
+>>   $index = "---`r`n$importLine`r`n---`r`n`r`n" + $index
+>>   $hasImport = $true
+>> }
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # If frontmatter exists but import missing, inject before closing ---
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if (-not $hasImport) {
+>>   $index = [regex]::Replace(
+>>     $index,
+>>     "(?s)^\s*---(.*?)\r?\n---",
+>>     { param($m) "---" + $m.Groups[1].Value + "`r`n" + $importLine + "`r`n---" },
+>>     1
+>>   )
+>>   Write-Host "UPDATED: $indexRel (import added)"
+>> } else {
+>>   Write-Host "UPDATED: $indexRel (import already present)"
+>> }
+UPDATED: src\pages\index.astro (import added)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # Insert render once: before the last closing tag in the file (best-effort, deterministic)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if (-not $hasRender) {
+>>   $marker = "<NextStepBravo />`r`n"
+>>   $idx = $index.LastIndexOf("</")
+>>   if ($idx -lt 0) {
+>>     # fallback: append
+>>     $index = $index + "`r`n" + $marker
+>>   } else {
+>>     $index = $index.Insert($idx, $marker)
+>>   }
+>>   Write-Host "UPDATED: $indexRel (render inserted)"
+>> } else {
+>>   Write-Host "UPDATED: $indexRel (render already present)"
+>> }
+UPDATED: src\pages\index.astro (render inserted)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # Write back index (idempotent)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $index | Set-Content -LiteralPath $indexRel -Encoding UTF8
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> # Stage + commit (reviewable)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> git add -- "$destRel" "$indexRel"
+fatal: pathspec 'src\components\library\marketing\cta\bravo\NextStepBravo.astro' did not match any files
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> $staged = git diff --cached --name-only
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> if (-not $staged) { throw "NO STAGED CHANGES: nothing to commit" }
+Exception: NO STAGED CHANGES: nothing to commit
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> git commit -m "feat: mirror NextStepBravo section (verbatim)"
+
+> my-astro-site@0.0.1 test
+> vitest
+
+
+ RUN  v4.0.18 C:/Users/salva/Dev/GLOBAL_POWER_TOPOLOGY/__BIG_SCHOOL/sentinel
+
+ ❯ tests/smoke.test.ts (4 tests | 3 failed) 180ms
+   ❯ sentinel: no control plane (4)
+     × GET / is 200-399 79ms
+     × Mutation verbs are blocked (405) 12ms
+     × Security headers present + no Set-Cookie 4ms
+     ✓ GET /architecture is 200-399 81ms
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/smoke.test.ts > sentinel: no control plane > GET / is 200-399
+AssertionError: expected 500 to be less than 400
+ ❯ tests/smoke.test.ts:13:22
+     11|     const r = await req("/");
+     12|     expect(r.status).toBeGreaterThanOrEqual(200);
+     13|     expect(r.status).toBeLessThan(400);
+       |                      ^
+     14|   });
+     15|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/smoke.test.ts > sentinel: no control plane > Mutation verbs are blocked (405)
+AssertionError: expected 500 to be 405 // Object.is equality
+
+- Expected
++ Received
+
+- 405
++ 500
+
+ ❯ tests/smoke.test.ts:19:24
+     17|     for (const method of ["POST", "PUT", "PATCH", "DELETE"]) {
+     18|       const r = await req("/", { method });
+     19|       expect(r.status).toBe(405);
+       |                        ^
+     20|     }
+     21|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/smoke.test.ts > sentinel: no control plane > Security headers present + no Set-Cookie
+AssertionError: expected null to be truthy
+
+- Expected:
+true
+
++ Received:
+null
+
+ ❯ tests/smoke.test.ts:25:54
+     23|   it("Security headers present + no Set-Cookie", async () => {
+     24|     const r = await req("/");
+     25|     expect(r.headers.get("content-security-policy")).toBeTruthy();
+       |                                                      ^
+     26|     expect(r.headers.get("x-frame-options")).toBeTruthy();
+     27|     expect(r.headers.get("x-content-type-options")).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  18:26:01
+   Duration  550ms (transform 75ms, setup 0ms, import 113ms, tests 180ms, environment 0ms)
+
+husky - pre-commit script failed (code 1)
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel> Write-Host "WROTE: commit 'feat: mirror NextStepBravo section (verbatim)'"
+WROTE: commit 'feat: mirror NextStepBravo section (verbatim)'
+PS C:\Users\salva\Dev\GLOBAL_POWER_TOPOLOGY\__BIG_SCHOOL\sentinel>
