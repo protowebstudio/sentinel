@@ -1,0 +1,139 @@
+---
+import { teachers, type TeacherAccent, type TeacherSize } from "@lib/people/teachers";
+
+type Props = {
+  title?: string;
+  subtitle?: string;
+  primaryCtaText?: string;
+  primaryCtaHref?: string;
+  secondaryCtaText?: string;
+  secondaryCtaHref?: string;
+  showBadge?: boolean;
+  badgeText?: string;
+};
+
+const {
+  title = "Protoweb Studio — Monitoring MVP (TFM)",
+  subtitle = "A one-page academic overview: objective, architecture, security boundaries, and delivered components. No live data, no metrics, no proofs.",
+  primaryCtaText = "View Component Library",
+  primaryCtaHref = "/component-library",
+  secondaryCtaText = "Jump to Overview",
+  secondaryCtaHref = "#overview",
+  showBadge = true,
+  badgeText = "TFM Presentation • Read-only",
+} = Astro.props as Props;
+
+const heroPeople = teachers.filter((t) => t.showInHero);
+
+const ringClass = (accent: TeacherAccent): string => {
+  switch (accent) {
+    case "yellow": return "ring-yellow-200";
+    case "violet": return "ring-violet-200";
+    case "green":  return "ring-emerald-200";
+    case "sky":    return "ring-sky-200";
+    case "slate":  return "ring-slate-200";
+  }
+};
+
+const sizeClass = (size: TeacherSize): string => {
+  switch (size) {
+    case "sm": return "h-28 w-28 xl:h-32 xl:w-32";
+    case "md": return "h-36 w-36 xl:h-44 xl:w-44";
+    case "lg": return "h-44 w-44 xl:h-56 xl:w-56";
+  }
+};
+
+const cardWidthClass = (size: TeacherSize): string => {
+  switch (size) {
+    case "sm": return "w-48";
+    case "md": return "w-52";
+    case "lg": return "w-56";
+  }
+};
+---
+
+<section class="relative bg-white py-12 sm:py-16 lg:py-20 xl:py-24">
+  <!-- Teacher bubbles (desktop only). Keep center content readable. -->
+  <div class="absolute inset-0 hidden lg:block pointer-events-none" aria-hidden="true">
+    {heroPeople.map((t) => (
+      <div
+        class:list={[
+          "absolute",
+          t.lane === "left" && "left-6 xl:left-10",
+          t.lane === "right" && "right-6 xl:right-10",
+        ]}
+        style={`top:${t.y}; transform: translateX(${t.lane === "left" ? t.xOffsetPx : -t.xOffsetPx}px);`}
+      >
+        <div class="relative">
+          <div class:list={[
+            "rounded-full overflow-hidden shadow-sm ring-8 bg-white",
+            sizeClass(t.size),
+            ringClass(t.accent),
+          ]}>
+            <img
+              src={t.image}
+              alt={`${t.name}, ${t.role}`}
+              class="h-full w-full object-cover object-center"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div class:list={[
+            "absolute left-1/2 -bottom-6 -translate-x-1/2",
+            cardWidthClass(t.size),
+          ]}>
+            <div class="rounded-2xl bg-white/90 backdrop-blur border border-slate-200 shadow px-4 py-3">
+              <div class="flex items-center gap-2">
+                <div class="font-semibold text-slate-900 text-sm truncate">{t.name}</div>
+                <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 flex-none" aria-hidden="true"></span>
+              </div>
+              <div class="text-xs text-slate-600 mt-1 truncate">{t.role}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-3xl text-center">
+      {showBadge && (
+        <div class="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full">
+          <span class="mr-2 inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true"></span>
+          <span>{badgeText}</span>
+        </div>
+      )}
+
+      <h1 class="mt-4 text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl xl:text-7xl">
+        {title}
+      </h1>
+
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-7 text-gray-700 lg:text-xl">
+        {subtitle}
+      </p>
+
+      <div class="mt-8 flex flex-col items-center gap-5">
+        <a
+          href={primaryCtaHref}
+          class="inline-flex items-center justify-center rounded-full bg-blue-600 px-8 py-4 text-base font-medium text-white shadow-sm transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
+          role="button"
+        >
+          {primaryCtaText}
+        </a>
+
+        <a
+          href={secondaryCtaHref}
+          class="inline-flex items-center justify-center rounded-full px-8 py-4 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+          role="button"
+        >
+          <svg class="mr-3 -ml-1 h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {secondaryCtaText}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
