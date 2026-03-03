@@ -72,9 +72,18 @@ export const registry: ComponentEntry[] = [
     title: "Features — Mirror (FeaturesMirror)",
     moduleKey: "../../components/library/marketing/features/FeaturesMirror.astro",
   },
+  {
+    domain: "marketing",
+    category: "features",
+    variant: "grid",
+    name: "FeaturesGrid",
+    title: "Features — Grid (FeaturesGrid)",
+    moduleKey: "../../components/library/marketing/features/grid/FeaturesGrid.astro",
+  },
 ];
 
 export function slugOf(e: ComponentEntry) {
   return e.domain + "/" + e.category + "/" + e.variant + "/" + e.name;
 }
+
 
