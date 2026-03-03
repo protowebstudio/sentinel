@@ -1,3 +1,14 @@
-# Enforce LF endings in repo (Windows-friendly)
-* text=auto eol=lf
-*.ps1 text eol=crlf
+# Normalize text files
+* text=auto
+
+# Force LF for code/content
+*.astro text eol=lf
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.js    text eol=lf
+*.mjs   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.ps1   text eol=crlf
