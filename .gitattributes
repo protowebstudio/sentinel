@@ -1,0 +1,3 @@
+# Enforce LF endings in repo (Windows-friendly)
+* text=auto eol=lf
+*.ps1 text eol=crlf

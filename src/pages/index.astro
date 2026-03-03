@@ -1,27 +1,19 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Header from "@components/layout/Header.astro";
-import Footer from "@components/layout/Footer.astro";
-
-import HeroAlpha from "@components/library/marketing/hero/alpha/HeroAlpha.astro";
-import OverviewAlpha from "@components/library/marketing/steps/alpha/OverviewAlpha.astro";
-import ArchitectureAlpha from "@components/library/marketing/stats/alpha/ArchitectureAlpha.astro";
-import FeaturesAlpha from "@components/library/marketing/faq/alpha/FeaturesAlpha.astro";
-import MethodAlpha from "@components/library/marketing/steps/alpha/MethodAlpha.astro";
-import GalleryAlpha from "@components/shared/patterns/gallery/GalleryAlpha.astro";
-import LinksAlpha from "@components/library/marketing/cta/alpha/LinksAlpha.astro";
+import HeroBravo from "@components/library/marketing/hero/HeroBravo.astro";
 ---
 
-<BaseLayout title="Protoweb Studio — TFM Presentation">
-  <Header />
-  <main id="main-content">
-    <HeroAlpha />
-    <OverviewAlpha />
-    <ArchitectureAlpha />
-    <FeaturesAlpha />
-    <MethodAlpha />
-    <GalleryAlpha />
-    <LinksAlpha />
-  </main>
-  <Footer />
+<BaseLayout title="Sentinel">
+  <HeroBravo
+    showBadge={true}
+    badgeText="TFM Presentation • Read-only"
+    title="Protoweb Studio — Monitoring MVP (TFM)"
+    subtitle="A one-page academic overview: objective, architecture, security boundaries, and delivered components. No live data, no metrics, no proofs."
+    primaryCtaText="View Component Library"
+    primaryCtaHref="/component-library"
+    secondaryCtaText="Jump to Overview"
+    secondaryCtaHref="#overview"
+    backgroundSrc="/assets/landingfolio/avatars-background.png"
+  />
 </BaseLayout>
+
