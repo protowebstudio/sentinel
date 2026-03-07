@@ -6,15 +6,15 @@ import type {
   OsohAuditTrailRecord,
   OsohMonitoringEventRecord,
   OsohStoreState,
-} from '../../../../../lib/server/osoh-store';
+} from '../../../../lib/server/osoh-store';
 import {
   loadOsohStoreState,
   saveOsohStoreState,
-} from '../../../../../lib/server/osoh-store';
+} from '../../../../lib/server/osoh-store';
 import {
   resolveIngestAuth,
   validateIngestPayload,
-} from '../../../../../lib/server/osoh-ingest';
+} from '../../../../lib/server/osoh-ingest';
 
 export const prerender = false;
 
@@ -180,3 +180,5 @@ export const POST: APIRoute = async ({ request }) => {
     202,
   );
 };
+
+
