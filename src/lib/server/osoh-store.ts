@@ -1,3 +1,6 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 export type IsoUtcTimestamp = string;
 
 export type OsohMonitoredSurfaceClass = 'external_monitored_surface';
@@ -18,7 +21,9 @@ export type OsohAuditAction =
   | 'site_updated'
   | 'site_disabled'
   | 'token_created'
-  | 'token_revoked';
+  | 'token_revoked'
+  | 'ingest_auth_failed'
+  | 'ingest_event_accepted';
 
 export interface OsohMonitoredSiteRecord {
   siteId: string;
@@ -69,9 +74,21 @@ export interface OsohStoreState {
   auditTrail: OsohAuditTrailRecord[];
 }
 
+const statePath = resolve(process.cwd(), 'src/lib/server/osoh-state.json');
+
 export const createEmptyOsohStoreState = (): OsohStoreState => ({
   monitoredSites: [],
   monitoredSurfaceTokens: [],
   monitoringEvents: [],
   auditTrail: [],
 });
+
+export const loadOsohStoreState = async (): Promise<OsohStoreState> => {
+  const raw = await readFile(statePath, 'utf8');
+  const parsed = JSON.parse(raw) as OsohStoreState;
+  return parsed;
+};
+
+export const saveOsohStoreState = async (state: OsohStoreState): Promise<void> => {
+  await writeFile(statePath, JSON.stringify(state, null, 2) + "`n", 'utf8');
+};
