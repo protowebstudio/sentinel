@@ -8,7 +8,8 @@ import type {
   OsohStoreState,
 } from '../../../../../lib/server/osoh-store';
 import {
-  createEmptyOsohStoreState,
+  loadOsohStoreState,
+  saveOsohStoreState,
 } from '../../../../../lib/server/osoh-store';
 import {
   resolveIngestAuth,
@@ -17,7 +18,7 @@ import {
 
 export const prerender = false;
 
-type RouteStage = 'auth' | 'validation' | 'accepted';
+type RouteStage = 'auth' | 'validation' | 'storage' | 'accepted';
 
 type RouteErrorReason =
   | 'missing_token'
@@ -32,7 +33,8 @@ type RouteErrorReason =
   | 'missing_occurred_at'
   | 'invalid_occurred_at'
   | 'missing_payload_body'
-  | 'invalid_payload_body';
+  | 'invalid_payload_body'
+  | 'state_write_failed';
 
 const json = (body: unknown, status: number): Response =>
   new Response(JSON.stringify(body), {
@@ -45,41 +47,18 @@ const json = (body: unknown, status: number): Response =>
 
 const nowIso = (): IsoUtcTimestamp => new Date().toISOString();
 
-const loadOsohStoreState = async (): Promise<OsohStoreState> => {
-  return createEmptyOsohStoreState();
-};
-
-const appendMonitoringEvent = async (
+const appendMonitoringEvent = (
   state: OsohStoreState,
   event: OsohMonitoringEventRecord,
-): Promise<void> => {
+): void => {
   state.monitoringEvents.push(event);
 };
 
-const appendAuditTrailRecord = async (
+const appendAuditTrailRecord = (
   state: OsohStoreState,
   record: OsohAuditTrailRecord,
-): Promise<void> => {
+): void => {
   state.auditTrail.push(record);
-};
-
-const auditAuthFailure = async (
-  state: OsohStoreState,
-  reason: Extract<
-    RouteErrorReason,
-    'missing_token' | 'unknown_token' | 'revoked_token' | 'inactive_site' | 'invalid_scope'
-  >,
-): Promise<void> => {
-  await appendAuditTrailRecord(state, {
-    auditId: randomUUID(),
-    siteId: 'unknown',
-    action: 'site_updated',
-    occurredAt: nowIso(),
-    details: {
-      category: 'ingest_auth_failure',
-      reason,
-    },
-  });
 };
 
 export const POST: APIRoute = async ({ request }) => {
@@ -91,13 +70,35 @@ export const POST: APIRoute = async ({ request }) => {
   );
 
   if (!authResult.ok) {
-    await auditAuthFailure(state, authResult.reason);
+    appendAuditTrailRecord(state, {
+      auditId: randomUUID(),
+      siteId: 'unknown',
+      action: 'ingest_auth_failed',
+      occurredAt: nowIso(),
+      details: {
+        category: 'ingest_auth_failure',
+        reason: authResult.reason,
+      },
+    });
+
+    try {
+      await saveOsohStoreState(state);
+    } catch {
+      return json(
+        {
+          ok: false,
+          stage: 'storage',
+          reason: 'state_write_failed',
+        },
+        500,
+      );
+    }
 
     return json(
       {
         ok: false,
-        stage: 'auth' satisfies RouteStage,
-        reason: authResult.reason satisfies RouteErrorReason,
+        stage: 'auth',
+        reason: authResult.reason,
       },
       401,
     );
@@ -111,8 +112,8 @@ export const POST: APIRoute = async ({ request }) => {
     return json(
       {
         ok: false,
-        stage: 'validation' satisfies RouteStage,
-        reason: 'invalid_json' satisfies RouteErrorReason,
+        stage: 'validation',
+        reason: 'invalid_json',
       },
       400,
     );
@@ -124,8 +125,8 @@ export const POST: APIRoute = async ({ request }) => {
     return json(
       {
         ok: false,
-        stage: 'validation' satisfies RouteStage,
-        reason: validationResult.reason satisfies RouteErrorReason,
+        stage: 'validation',
+        reason: validationResult.reason,
       },
       400,
     );
@@ -134,7 +135,7 @@ export const POST: APIRoute = async ({ request }) => {
   const receivedAt = nowIso();
   const eventId = randomUUID();
 
-  await appendMonitoringEvent(state, {
+  appendMonitoringEvent(state, {
     eventId,
     siteId: authResult.siteId,
     eventType: validationResult.normalized.eventType,
@@ -143,10 +144,10 @@ export const POST: APIRoute = async ({ request }) => {
     payload: validationResult.normalized.payload,
   });
 
-  await appendAuditTrailRecord(state, {
+  appendAuditTrailRecord(state, {
     auditId: randomUUID(),
     siteId: authResult.siteId,
-    action: 'site_updated',
+    action: 'ingest_event_accepted',
     occurredAt: receivedAt,
     details: {
       category: 'ingest_event_accepted',
@@ -155,10 +156,23 @@ export const POST: APIRoute = async ({ request }) => {
     },
   });
 
+  try {
+    await saveOsohStoreState(state);
+  } catch {
+    return json(
+      {
+        ok: false,
+        stage: 'storage',
+        reason: 'state_write_failed',
+      },
+      500,
+    );
+  }
+
   return json(
     {
       ok: true,
-      stage: 'accepted' satisfies RouteStage,
+      stage: 'accepted',
       eventId,
       siteId: authResult.siteId,
       receivedAt,
