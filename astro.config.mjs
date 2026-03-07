@@ -1,3 +1,4 @@
+import node from '@astrojs/node';
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
@@ -12,6 +13,8 @@ import tailwind from "@tailwindcss/vite";
 const allowDevIframe = process.env.SENTINEL_ALLOW_IFRAME === "1";
 
 export default defineConfig({
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
   site: "https://sentinel.protowebstudio.com",
 
   integrations: [
@@ -32,3 +35,4 @@ export default defineConfig({
     },
   },
 });
+
