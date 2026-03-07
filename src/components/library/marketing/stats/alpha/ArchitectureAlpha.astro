@@ -2,16 +2,16 @@
   <div class="container mx-auto px-4 py-16 max-w-7xl">
     <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Architecture</h2>
     <p class="mt-4 text-gray-600 max-w-3xl">
-      Clear domain separation: API is the only authority, WWW is the client dashboard, Sentinel is presentation-only.
+      Clear domain separation: API is the execution authority, WWW is the operator/control surface, Sentinel is presentation-only.
     </p>
 
     <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <div class="border border-gray-200 bg-white rounded-2xl p-6">
         <h3 class="font-bold text-gray-900">Domain separation</h3>
         <ul class="mt-4 space-y-3 text-gray-700">
-          <li><span class="font-semibold">api.protowebstudio.com</span> — engine (auth, ingestion, scoring, storage)</li>
-          <li><span class="font-semibold">www.protowebstudio.com</span> — dashboard + metrics UI (reads from API)</li>
-          <li><span class="font-semibold">sentinel.protowebstudio.com</span> — TFM presentation only (this site)</li>
+          <li><span class="font-semibold">api.protowebstudio.com</span> — execution engine (auth, ingestion, scoring, storage)</li>
+          <li><span class="font-semibold">www.protowebstudio.com</span> — operator/control surface (reads from API)</li>
+          <li><span class="font-semibold">sentinel.protowebstudio.com</span> — public presentation surface (this site)</li>
         </ul>
 
         <p class="mt-4 text-sm text-gray-500">
