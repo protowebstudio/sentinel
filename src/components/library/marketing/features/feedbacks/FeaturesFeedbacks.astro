@@ -1,22 +1,22 @@
 ---
 const cards = [
   {
-    title: "Take authentic feedbacks from customers of your app.",
-    highlight: "Build a quick list.",
+    title: "Capture structured feedback from platform users and review it in a clear workflow.",
+    highlight: "structured feedback.",
     img: "/placeholders/ph-1200x675.svg",
-    alt: "Placeholder preview for customer feedback list",
+    alt: "Placeholder preview for feedback collection workflow",
   },
   {
-    title: "Make quick fixes based on the feedbacks you've received.",
-    highlight: "Make quick fixes",
+    title: "Apply focused improvements based on reviewed feedback and validated priorities.",
+    highlight: "focused improvements.",
     img: "/placeholders/ph-1200x675.svg",
-    alt: "Placeholder preview for quick fixes workflow",
+    alt: "Placeholder preview for improvement workflow",
   },
   {
-    title: "Enjoy more than 10x revenue with real-time conversions. Grow your business.",
-    highlight: "real-time conversions.",
+    title: "Track progress through consistent visibility and measurable product iteration.",
+    highlight: "consistent visibility.",
     img: "/placeholders/ph-1200x675.svg",
-    alt: "Placeholder preview for real-time conversions dashboard",
+    alt: "Placeholder preview for progress visibility",
   },
 ] as const;
 ---
@@ -25,10 +25,10 @@ const cards = [
   <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
     <div class="max-w-lg mx-auto text-center">
       <h2 class="text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-        Quality feedbacks for your SaaS products
+        Structured feedback workflow
       </h2>
       <p class="mt-4 text-base font-normal leading-7 text-gray-600 lg:text-lg lg:mt-6 lg:leading-8">
-        The blocks & components you need
+        Reusable presentation blocks with neutral product language
       </p>
     </div>
 
@@ -36,13 +36,11 @@ const cards = [
       {cards.map((c) => (
         <article class="bg-gray-100 rounded-2xl h-full">
           <div class="h-full flex flex-col p-6 sm:p-8">
-            <!-- Title area: reserve space so media aligns even with different copy lengths -->
             <h3 class="text-xl font-semibold text-gray-900 leading-snug min-h-[7.5rem] line-clamp-4">
               {c.title}{" "}
               <span class="bg-blue-300">{c.highlight}</span>
             </h3>
 
-            <!-- Media pinned to bottom -->
             <div class="mt-auto pt-8">
               <div class="overflow-hidden rounded-xl bg-white/40">
                 <img
