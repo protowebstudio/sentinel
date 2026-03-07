@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { registry, slugOf } from "../../lib/component-library/registry";
+---
+
+<BaseLayout title="Component Library" description="Registry-driven component previews.">
+  <section class="py-16">
+    <div class="mx-auto max-w-6xl px-4">
+      <h1 class="text-4xl font-semibold">Component Library</h1>
+      <p class="mt-3 opacity-80">Registry-driven previews. Add entries in <code class="opacity-90">src/lib/component-library/registry.ts</code>.</p>
+
+      {registry.length === 0 ? (
+        <div class="mt-8 rounded-2xl border p-6">
+          <div class="font-medium">No components registered yet.</div>
+          <div class="mt-2 text-sm opacity-80">Add your first entry to the registry, then reload this page.</div>
+        </div>
+      ) : (
+        <div class="mt-10 grid gap-4 md:grid-cols-2">
+          {registry.map((e) => (
+            <a class="rounded-2xl border p-5 hover:opacity-90" href={`/component-library/${slugOf(e)}`}>
+              <div class="font-medium">{e.title}</div>
+              <div class="mt-1 text-sm opacity-70">{e.domain} / {e.category} / {e.variant}</div>
+              {e.description && <div class="mt-2 text-sm opacity-80">{e.description}</div>}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

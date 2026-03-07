@@ -1,51 +1,22 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
-import HeroMonitoring from "../components/monitoring/HeroMonitoring.astro";
-import MonitoringStatus from "../components/monitoring/MonitoringStatus.astro";
-import ArchitectureOverview from "../components/monitoring/ArchitectureOverview.astro";
-import SecurityControls from "../components/monitoring/SecurityControls.astro";
-import Chapters from "../components/Chapters.astro";
-
-const HEALTH_URL = "https://api.protowebstudio.com/api/health";
-
-let status: "active" | "inactive" = "inactive";
-let lastCheckedAt: string | null = null;
-
-try {
-  const response = await fetch(HEALTH_URL, { headers: { Accept: "application/json" } });
-
-  if (response.ok) {
-    const data = await response.json();
-    if (data && typeof data.status === "string" && typeof data.timestamp === "string") {
-      status = data.status === "ok" ? "active" : "inactive";
-      lastCheckedAt = data.timestamp;
-    }
-  }
-} catch {
-  status = "inactive";
-}
+import HeroBravo from "@components/library/marketing/hero/HeroBravo.astro";
+import NextStepBravo from "../components/library/marketing/cta/bravo/NextStepBravo.astro";
 ---
 
 <BaseLayout title="Sentinel">
-  <Header />
-
-  <main id="main-content">
-    <HeroMonitoring
-      title="Sentinel — Institutional Demonstration Surface"
-      subtitle="Sentinel is read-only. It validates execution-core availability via a public health probe and presents institutional architecture and security narrative."
-      environment="production"
-      dashboardUrl="https://www.protowebstudio.com/dashboard"
-    />
-  <Chapters />
-
-    <MonitoringStatus status={status} lastCheckedAt={lastCheckedAt} />
-    <ArchitectureOverview />
-    <SecurityControls />
-  </main>
-
-  <Footer />
+  <HeroBravo
+    showBadge={true}
+    badgeText="TFM Presentation • Read-only"
+    title="Protoweb Studio — Monitoring MVP (TFM)"
+    subtitle="A one-page academic overview: objective, architecture, security boundaries, and delivered components. No live data, no metrics, no proofs."
+    primaryCtaText="View Component Library"
+    primaryCtaHref="/component-library"
+    secondaryCtaText="Jump to Overview"
+    secondaryCtaHref="#overview"
+    backgroundSrc="/assets/landingfolio/avatars-background.png"
+  />
+<NextStepBravo />
 </BaseLayout>
 
 

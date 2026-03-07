@@ -27,12 +27,9 @@ describe("sentinel: no control plane", () => {
     expect(r.headers.get("x-content-type-options")).toBeTruthy();
     expect(r.headers.get("set-cookie")).toBeNull();
   });
-
-  it("GET /proofs renders (200-399) and contains a badge state", async () => {
-    const r = await req("/proofs");
+  it("GET /architecture is 200-399", async () => {
+    const r = await req("/architecture");
     expect(r.status).toBeGreaterThanOrEqual(200);
     expect(r.status).toBeLessThan(400);
-    const html = await r.text();
-    expect(/(OK|FAIL|STALE|UNAVAILABLE)/.test(html)).toBe(true);
   });
 });
