@@ -2,7 +2,7 @@
   <div class="container mx-auto px-4 py-16 max-w-7xl">
     <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Architecture</h2>
     <p class="mt-4 text-gray-600 max-w-3xl">
-      Clear domain separation: API is the execution authority, WWW is the operator/control surface, Sentinel is presentation-only.
+      Clear domain separation: API is the execution authority, WWW is the core web surface, and Sentinel is presentation-only.
     </p>
 
     <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -10,12 +10,12 @@
         <h3 class="font-bold text-gray-900">Domain separation</h3>
         <ul class="mt-4 space-y-3 text-gray-700">
           <li><span class="font-semibold">api.protowebstudio.com</span> — execution engine (auth, ingestion, scoring, storage)</li>
-          <li><span class="font-semibold">www.protowebstudio.com</span> — operator/control surface (reads from API)</li>
+          <li><span class="font-semibold">www.protowebstudio.com</span> — core web surface for the OSOH platform</li>
           <li><span class="font-semibold">sentinel.protowebstudio.com</span> — public presentation surface (this site)</li>
         </ul>
 
         <p class="mt-4 text-sm text-gray-500">
-          Sentinel contains no live calls, no metrics, no proofs, no secrets.
+          Sentinel contains no live calls, no metrics, no proofs, and no secrets.
         </p>
       </div>
 
