@@ -51,6 +51,8 @@ const allowedEventTypes: readonly OsohMonitoringEventType[] = [
   'surface_health_changed',
   'surface_token_used',
   'surface_token_revoked',
+  'deployment',
+  'heartbeat',
 ] as const;
 
 const isOsohMonitoringEventType = (
@@ -189,3 +191,5 @@ export const validateIngestPayload = (
     },
   };
 };
+
+
