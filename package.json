@@ -13,7 +13,9 @@
     "prepare": "husky",
     "gates": "powershell -ExecutionPolicy Bypass -File .\\scripts\\l6-gates.ps1",
     "prepush": "npm run build && npm run gates",
-    "docs:gate": "powershell -ExecutionPolicy Bypass -File .\\scripts\\docs-gate.ps1"
+    "docs:gate": "powershell -ExecutionPolicy Bypass -File .\\scripts\\docs-gate.ps1",
+    "osoh:push:deployment": "tsx scripts/osoh-send-deployment.ts",
+    "osoh:push:heartbeat": "tsx scripts/osoh-send-heartbeat.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.0",
@@ -41,6 +43,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
+    "tsx": "^4.21.0",
     "vitest": "^4.0.18"
   }
 }
