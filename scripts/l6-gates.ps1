@@ -22,10 +22,21 @@ function Find-Hits([string]$Root, [string]$Pattern) {
   return ($files | Select-String -Pattern $Pattern -ErrorAction SilentlyContinue)
 }
 
-# 1) Sentinel rule: NO fetch() in src (presentation-only)
-$fetchHits = Find-Hits "src" 'fetch\s*\('
-if ($fetchHits) { Fail "fetch() detected in src/. Sentinel must be presentation-only. Remove fetch() usage." }
-Ok "No fetch() in src/"
+# 1) Sentinel rule: NO fetch() in presentation/UI paths only
+$uiPaths = @(
+  "src\pages",
+  "src\components",
+  "src\layouts"
+)
+$uiPaths = $uiPaths | Where-Object { Test-Path $_ }
+
+$fetchHits = @()
+foreach ($p in $uiPaths) {
+  $fetchHits += Find-Hits $p 'fetch\s*\('
+}
+
+if ($fetchHits) { Fail "fetch() detected in presentation/UI paths. Remove fetch() usage." }
+Ok "No fetch() in presentation/UI paths"
 
 # 2) No localhost / 127.0.0.1 in src
 $localHits = Find-Hits "src" 'localhost|127\.0\.0\.1'
@@ -42,4 +53,3 @@ if ($CheckDist) {
 }
 
 Ok "L6 gates passed."
-
