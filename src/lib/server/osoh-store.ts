@@ -14,7 +14,9 @@ export type OsohMonitoringEventType =
   | 'surface_ping_received'
   | 'surface_health_changed'
   | 'surface_token_used'
-  | 'surface_token_revoked';
+  | 'surface_token_revoked'
+  | 'deployment'
+  | 'heartbeat';
 
 export type OsohAuditAction =
   | 'site_created'
@@ -92,5 +94,7 @@ export const loadOsohStoreState = async (): Promise<OsohStoreState> => {
 export const saveOsohStoreState = async (state: OsohStoreState): Promise<void> => {
   await writeFile(statePath, JSON.stringify(state, null, 2) + "`n", 'utf8');
 };
+
+
 
 

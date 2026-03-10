@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "astro";
 
-const ALLOW = new Set(["GET", "HEAD"]);
+const ALLOW = new Set(["GET", "HEAD", "POST"]);
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const method = context.request.method.toUpperCase();
@@ -33,3 +33,5 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   return res;
 };
+
+

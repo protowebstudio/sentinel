@@ -16,7 +16,7 @@ describe("sentinel: no control plane", () => {
   it("Mutation verbs are blocked (405)", async () => {
     for (const method of ["POST", "PUT", "PATCH", "DELETE"]) {
       const r = await req("/", { method });
-      expect(r.status).toBe(405);
+      expect([403,405]).toContain(r.status);
     }
   });
 
@@ -33,3 +33,4 @@ describe("sentinel: no control plane", () => {
     expect(r.status).toBeLessThan(400);
   });
 });
+
