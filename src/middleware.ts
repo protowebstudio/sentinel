@@ -1,9 +1,31 @@
 import type { MiddlewareHandler } from "astro";
 
-const ALLOW = new Set(["GET", "HEAD", "POST"]);
+const ALLOW = new Set(["GET", "HEAD"]);
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const method = context.request.method.toUpperCase();
+  const pathname = new URL(context.request.url).pathname;
+
+  if (
+    (pathname === "/api/v1/monitoring/pull-check" || pathname === "/api/v1/monitoring/ingest") &&
+    method === "POST"
+  ) {
+    const res = await next();
+    res.headers.set("X-Frame-Options", "DENY");
+    res.headers.set("X-Content-Type-Options", "nosniff");
+    res.headers.set("Referrer-Policy", "no-referrer");
+    res.headers.set("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+    res.headers.set(
+      "Content-Security-Policy",
+      "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'none'; frame-ancestors 'none'"
+    );
+    res.headers.delete("Set-Cookie");
+    const ct = res.headers.get("Content-Type") ?? "";
+    if (ct.includes("text/html")) {
+      res.headers.set("Cache-Control", "public, max-age=15, stale-while-revalidate=60");
+    }
+    return res;
+  }
 
   // Read-only hard gate (no control plane)
   if (!ALLOW.has(method)) {
@@ -33,5 +55,3 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   return res;
 };
-
-
