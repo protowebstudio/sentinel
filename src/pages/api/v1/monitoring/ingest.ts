@@ -1,184 +1,79 @@
-import { randomUUID } from 'node:crypto';
-import type { APIRoute } from 'astro';
-
-import type {
-  IsoUtcTimestamp,
-  OsohAuditTrailRecord,
-  OsohMonitoringEventRecord,
-  OsohStoreState,
-} from '../../../../lib/server/osoh-store';
-import {
-  loadOsohStoreState,
-  saveOsohStoreState,
-} from '../../../../lib/server/osoh-store';
-import {
-  resolveIngestAuth,
-  validateIngestPayload,
-} from '../../../../lib/server/osoh-ingest';
+import { loadOsohStoreState, saveOsohStoreState } from '../../../../lib/server/osoh-store';
+import { resolveIngestAuth, validateIngestPayload } from '../../../../lib/server/osoh-ingest';
 
 export const prerender = false;
 
-type RouteStage = 'auth' | 'validation' | 'storage' | 'accepted';
+const createId = (prefix) =>
+  `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-type RouteErrorReason =
-  | 'missing_token'
-  | 'unknown_token'
-  | 'revoked_token'
-  | 'inactive_site'
-  | 'invalid_scope'
-  | 'invalid_json'
-  | 'invalid_payload'
-  | 'missing_event_type'
-  | 'invalid_event_type'
-  | 'missing_occurred_at'
-  | 'invalid_occurred_at'
-  | 'missing_payload_body'
-  | 'invalid_payload_body'
-  | 'state_write_failed';
-
-const json = (body: unknown, status: number): Response =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'no-store',
-    },
-  });
-
-const nowIso = (): IsoUtcTimestamp => new Date().toISOString();
-
-const appendMonitoringEvent = (
-  state: OsohStoreState,
-  event: OsohMonitoringEventRecord,
-): void => {
-  state.monitoringEvents.push(event);
-};
-
-const appendAuditTrailRecord = (
-  state: OsohStoreState,
-  record: OsohAuditTrailRecord,
-): void => {
-  state.auditTrail.push(record);
-};
-
-export const POST: APIRoute = async ({ request }) => {
+export async function POST({ request }) {
   const state = await loadOsohStoreState();
+  const auth = resolveIngestAuth(state, request.headers.get('authorization') ?? undefined);
 
-  const authResult = resolveIngestAuth(
-    state,
-    request.headers.get('authorization') ?? undefined,
-  );
-
-  if (!authResult.ok) {
-    appendAuditTrailRecord(state, {
-      auditId: randomUUID(),
+  if (!auth.ok) {
+    state.auditTrail.push({
+      auditId: createId('audit'),
       siteId: 'unknown',
       action: 'ingest_auth_failed',
-      occurredAt: nowIso(),
-      details: {
-        category: 'ingest_auth_failure',
-        reason: authResult.reason,
-      },
+      occurredAt: new Date().toISOString(),
+      details: { reason: auth.reason }
     });
 
-    try {
-      await saveOsohStoreState(state);
-    } catch {
-      return json(
-        {
-          ok: false,
-          stage: 'storage',
-          reason: 'state_write_failed',
-        },
-        500,
-      );
-    }
+    await saveOsohStoreState(state);
 
-    return json(
-      {
-        ok: false,
-        stage: 'auth',
-        reason: authResult.reason,
-      },
-      401,
-    );
+    return new Response(JSON.stringify({ ok: false, error: auth.reason }), {
+      status: 401,
+      headers: { 'content-type': 'application/json' }
+    });
   }
 
-  let body: unknown;
+  let body;
 
   try {
     body = await request.json();
   } catch {
-    return json(
-      {
-        ok: false,
-        stage: 'validation',
-        reason: 'invalid_json',
-      },
-      400,
-    );
+    return new Response(JSON.stringify({ ok: false, error: 'invalid_payload' }), {
+      status: 400,
+      headers: { 'content-type': 'application/json' }
+    });
   }
 
-  const validationResult = validateIngestPayload(body);
+  const validation = validateIngestPayload(body);
 
-  if (!validationResult.ok) {
-    return json(
-      {
-        ok: false,
-        stage: 'validation',
-        reason: validationResult.reason,
-      },
-      400,
-    );
+  if (!validation.ok) {
+    return new Response(JSON.stringify({ ok: false, error: validation.reason }), {
+      status: 400,
+      headers: { 'content-type': 'application/json' }
+    });
   }
 
-  const receivedAt = nowIso();
-  const eventId = randomUUID();
+  const eventId = createId('evt');
+  const receivedAt = new Date().toISOString();
 
-  appendMonitoringEvent(state, {
+  state.monitoringEvents.push({
     eventId,
-    siteId: authResult.siteId,
-    eventType: validationResult.normalized.eventType,
-    occurredAt: validationResult.normalized.occurredAt,
+    siteId: auth.siteId,
+    eventType: validation.normalized.eventType,
+    occurredAt: validation.normalized.occurredAt,
     receivedAt,
-    payload: validationResult.normalized.payload,
+    payload: validation.normalized.payload
   });
 
-  appendAuditTrailRecord(state, {
-    auditId: randomUUID(),
-    siteId: authResult.siteId,
+  state.auditTrail.push({
+    auditId: createId('audit'),
+    siteId: auth.siteId,
     action: 'ingest_event_accepted',
     occurredAt: receivedAt,
     details: {
-      category: 'ingest_event_accepted',
       eventId,
-      eventType: validationResult.normalized.eventType,
-    },
+      eventType: validation.normalized.eventType
+    }
   });
 
-  try {
-    await saveOsohStoreState(state);
-  } catch {
-    return json(
-      {
-        ok: false,
-        stage: 'storage',
-        reason: 'state_write_failed',
-      },
-      500,
-    );
-  }
+  await saveOsohStoreState(state);
 
-  return json(
-    {
-      ok: true,
-      stage: 'accepted',
-      eventId,
-      siteId: authResult.siteId,
-      receivedAt,
-    },
-    202,
-  );
-};
-
-
+  return new Response(JSON.stringify({ ok: true, eventId, receivedAt }), {
+    status: 200,
+    headers: { 'content-type': 'application/json' }
+  });
+}

@@ -1,0 +1,48 @@
+---
+import { loadOsohStoreState } from "../lib/server/osoh-store";
+
+const state = await loadOsohStoreState();
+const site = state.monitoredSites?.[0] ?? null;
+const checks = Array.isArray(state.monitoringChecks) ? state.monitoringChecks : [];
+const lastCheck = checks.length ? checks[checks.length - 1] : null;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sentinel Monitoring</title>
+  </head>
+  <body>
+    <main>
+      <h1>Sentinel Monitoring</h1>
+      <p>Read-only operator view of the latest monitoring result.</p>
+
+      <section>
+        <h2>Monitored Site</h2>
+        <ul>
+          <li><strong>Site ID:</strong> {site?.siteId ?? "UNKNOWN"}</li>
+          <li><strong>Site Slug:</strong> {site?.siteSlug ?? "UNKNOWN"}</li>
+          <li><strong>Status:</strong> {site?.status ?? "UNKNOWN"}</li>
+          <li><strong>URL:</strong> {site?.url ?? "UNKNOWN"}</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Latest Check</h2>
+        {lastCheck ? (
+          <ul>
+            <li><strong>Checked At:</strong> {lastCheck.checkedAt ?? "UNKNOWN"}</li>
+            <li><strong>OK:</strong> {String(lastCheck.ok)}</li>
+            <li><strong>Status Code:</strong> {String(lastCheck.statusCode ?? "UNKNOWN")}</li>
+            <li><strong>Response Time (ms):</strong> {String(lastCheck.responseTimeMs ?? "UNKNOWN")}</li>
+            <li><strong>Error Reason:</strong> {lastCheck.errorReason ?? "NONE"}</li>
+            <li><strong>Error Detail:</strong> {lastCheck.errorDetail ?? "NONE"}</li>
+          </ul>
+        ) : (
+          <p>No monitoring checks recorded yet.</p>
+        )}
+      </section>
+    </main>
+  </body>
+</html>
