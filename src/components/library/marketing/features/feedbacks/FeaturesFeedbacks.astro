@@ -1,0 +1,60 @@
+---
+const cards = [
+  {
+    title: "Capture structured feedback from platform users and review it in a clear workflow.",
+    highlight: "structured feedback.",
+    img: "/placeholders/ph-1200x675.svg",
+    alt: "Placeholder preview for feedback collection workflow",
+  },
+  {
+    title: "Apply focused improvements based on reviewed feedback and validated priorities.",
+    highlight: "focused improvements.",
+    img: "/placeholders/ph-1200x675.svg",
+    alt: "Placeholder preview for improvement workflow",
+  },
+  {
+    title: "Track progress through consistent visibility and measurable product iteration.",
+    highlight: "consistent visibility.",
+    img: "/placeholders/ph-1200x675.svg",
+    alt: "Placeholder preview for progress visibility",
+  },
+] as const;
+---
+
+<section class="py-12 bg-white sm:py-16 lg:py-20 xl:py-24">
+  <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+    <div class="max-w-lg mx-auto text-center">
+      <h2 class="text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+        Structured feedback workflow
+      </h2>
+      <p class="mt-4 text-base font-normal leading-7 text-gray-600 lg:text-lg lg:mt-6 lg:leading-8">
+        Reusable presentation blocks with neutral product language
+      </p>
+    </div>
+
+    <div class="grid max-w-md grid-cols-1 gap-6 mx-auto mt-12 sm:mt-16 lg:mt-20 lg:max-w-none lg:grid-cols-3">
+      {cards.map((c) => (
+        <article class="bg-gray-100 rounded-2xl h-full">
+          <div class="h-full flex flex-col p-6 sm:p-8">
+            <h3 class="text-xl font-semibold text-gray-900 leading-snug min-h-[7.5rem] line-clamp-4">
+              {c.title}{" "}
+              <span class="bg-blue-300">{c.highlight}</span>
+            </h3>
+
+            <div class="mt-auto pt-8">
+              <div class="overflow-hidden rounded-xl bg-white/40">
+                <img
+                  class="w-full aspect-[16/10] object-cover"
+                  src={c.img}
+                  alt={c.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

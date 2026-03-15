@@ -1,0 +1,19 @@
+---
+export const prerender = false;
+
+export async function POST({ request }) {
+  const body = await request.text();
+
+  return new Response(
+    JSON.stringify({
+      ok: true,
+      method: request.method,
+      body
+    }),
+    {
+      status: 200,
+      headers: { 'content-type': 'application/json' }
+    }
+  );
+}
+---

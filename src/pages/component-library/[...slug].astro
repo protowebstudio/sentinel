@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { registry, slugOf } from "../../lib/component-library/registry";
+
+export function getStaticPaths() {
+  return registry.map((e) => ({
+    params: { slug: slugOf(e) }, // string
+    props: { entry: e },
+  }));
+}
+
+const { entry } = Astro.props;
+
+// IMPORTANT: keys must match entry.moduleKey exactly
+const modules = import.meta.glob("../../components/library/**/*.astro");
+
+let PreviewComp: any = null;
+let importError: any = null;
+
+try {
+  const loader = modules[entry.moduleKey];
+  if (!loader) {
+    throw new Error(`No module found for key: ${entry.moduleKey}`);
+  }
+  const mod: any = await loader();
+  PreviewComp = mod.default;
+} catch (e) {
+  importError = e;
+}
+---
+
+<BaseLayout title={`Preview — ${entry.title}`} description="Component preview.">
+  <section class="py-10">
+    <div class="mx-auto max-w-6xl px-4">
+      <a class="text-sm opacity-80 hover:opacity-100" href="/component-library">← Back to Component Library</a>
+
+      <div class="mt-6 flex items-start justify-between gap-6">
+        <div>
+          <h1 class="text-3xl font-semibold">{entry.title}</h1>
+          <div class="mt-2 text-sm opacity-70">{entry.domain} / {entry.category} / {entry.variant}</div>
+        </div>
+        <code class="text-xs opacity-70 break-all max-w-sm">{entry.moduleKey}</code>
+      </div>
+
+      <div class="mt-8 rounded-2xl border p-6">
+        {importError ? (
+          <div>
+            <div class="font-medium">Preview failed to import component.</div>
+            <pre class="mt-3 text-xs opacity-80 whitespace-pre-wrap">{String(importError)}</pre>
+          </div>
+        ) : (
+          <PreviewComp />
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

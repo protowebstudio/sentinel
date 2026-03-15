@@ -1,0 +1,16 @@
+cleanup() {
+  if [ -n "$SERVER_PID" ]; then
+    kill "$SERVER_PID" 2>/dev/null || true
+    wait "$SERVER_PID" 2>/dev/null || true
+  fi
+}
+
+trap cleanup EXIT INT TERM
+
+npm run dev -- --host 127.0.0.1 --port 4321 >/dev/null 2>&1 &
+SERVER_PID=$!
+
+node -e "const http=require('http');let tries=0;(function ping(){http.get('http://127.0.0.1:4321',res=>{res.resume();process.exit(0)}).on('error',()=>{if(++tries>=60){console.error('Server did not start on http://127.0.0.1:4321');process.exit(1)}setTimeout(ping,1000)})})()"
+SENTINEL_BASE_URL=http://127.0.0.1:4321 npm run test:ci
+npm run build
+npm run gates

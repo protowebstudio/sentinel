@@ -1,0 +1,50 @@
+---
+type Props = {
+  title?: string;
+  subtitle?: string;
+  primaryText?: string;
+  primaryHref?: string;
+  secondaryText?: string;
+  secondaryHref?: string;
+};
+
+const {
+  title = "Ready for the next step?",
+  subtitle = "Explore the component library and see how the UI system is built with reusable variants.",
+  primaryText = "Open Component Library",
+  primaryHref = "/component-library",
+  secondaryText = "Back to Home",
+  secondaryHref = "/",
+} = Astro.props as Props;
+---
+
+<section class="py-12 bg-white sm:py-16 lg:py-20">
+  <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="overflow-hidden bg-white border border-slate-200 rounded-3xl">
+      <div class="px-6 py-10 sm:px-10 sm:py-12">
+        <div class="max-w-2xl mx-auto text-center">
+          <h2 class="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{title}</h2>
+          <p class="mt-4 text-base text-slate-600 sm:text-lg">{subtitle}</p>
+
+          <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a
+              href={primaryHref}
+              class="inline-flex items-center justify-center rounded-full bg-blue-600 px-7 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
+              role="button"
+            >
+              {primaryText}
+            </a>
+
+            <a
+              href={secondaryHref}
+              class="inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2"
+              role="button"
+            >
+              {secondaryText}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,89 +1,23 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import HeroMonitoring from '../components/monitoring/HeroMonitoring.astro';
-import MonitoringStatus from '../components/monitoring/MonitoringStatus.astro';
-import ArchitectureOverview from '../components/monitoring/ArchitectureOverview.astro';
-import SecurityControls from '../components/monitoring/SecurityControls.astro';
-import { sendTelemetry } from '../lib/system/telemetry';
-import { getRiskLevel } from '../lib/domain/risk-model';
-
-const SITE_SLUG = "test-site";
-
-let riskScore = 0;
-let riskLevel: "low" | "medium" | "high" | "critical" = "low";
-let windowSize = 0;
-let lastEventAt: string | null = null;
-let status: "active" | "inactive" = "inactive";
-
-/**
- * Failure-Isolated Fetch
- * - 3s timeout
- * - Defensive JSON parsing
- * - Strict numeric validation
- */
-async function fetchRisk() {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 3000);
-
-  try {
-    const response = await fetch(
-      `https://api.protowebstudio.com/api/public-risk/${SITE_SLUG}`,
-      { signal: controller.signal }
-    );
-
-    if (!response.ok) return;
-
-    const data = await response.json();
-
-    if (typeof data.score !== "number") return;
-    if (typeof data.window_size !== "number") return;
-
-    riskScore = data.score;
-    riskLevel = getRiskLevel(riskScore);
-    windowSize = data.window_size;
-    lastEventAt =
-      typeof data.computed_at === "string" ? data.computed_at : null;
-
-    status = "active";
-  } catch {
-    status = "inactive";
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-await fetchRisk();
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroBravo from "@components/library/marketing/hero/HeroBravo.astro";
+import NextStepBravo from "../components/library/marketing/cta/bravo/NextStepBravo.astro";
 ---
+
 <BaseLayout title="Sentinel">
-  <Header />
-
-  <main id="main-content">
-    <HeroMonitoring
-      title="Sentinel — Live Monitored Production Surface"
-      subtitle="This site is actively monitored by the Operational Security & Observability Hub. All traffic is ingested and scored in real time."
-      environment="production"
-      dashboardUrl="https://protowebstudio.com/dashboard"
-    />
-
-    <MonitoringStatus
-      riskScore={riskScore}
-      riskLevel={riskLevel}
-      windowSize={windowSize}
-      lastEventAt={lastEventAt}
-      status={status}
-    />
-
-    <ArchitectureOverview />
-    <SecurityControls />
-  </main>
-
-  <Footer />
-
-  <script>
-    window.addEventListener("load", () => {
-      sendTelemetry();
-    });
-  </script>
+  <HeroBravo
+    showBadge={true}
+    badgeText="TFM Presentation • Read-only"
+    title="Protoweb Studio — Monitoring MVP (TFM)"
+    subtitle="A one-page academic overview: objective, architecture, security boundaries, and delivered components. No live data, no metrics, no proofs."
+    primaryCtaText="View Component Library"
+    primaryCtaHref="/component-library"
+    secondaryCtaText="Jump to Overview"
+    secondaryCtaHref="#overview"
+    backgroundSrc="/assets/landingfolio/avatars-background.png"
+  />
+<NextStepBravo />
 </BaseLayout>
+
+
+

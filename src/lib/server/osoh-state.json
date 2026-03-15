@@ -1,0 +1,29 @@
+{
+  "monitoredSites": [
+    {
+      "siteId": "sentinel-demo",
+      "siteSlug": "sentinel-demo",
+      "displayName": "Sentinel Demo",
+      "classification": "external_monitored_surface",
+      "status": "active_monitored_surface",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "monitoredSurfaceTokens": [
+    {
+      "tokenId": "token-sentinel-demo",
+      "siteId": "sentinel-demo",
+      "tokenHash": "7c43ef5ae21d43ce2743f770c68e24def1a43ee2f416d2438410c8af7af2ff2c",
+      "scope": "ingest",
+      "revoked": false,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "monitoringEvents": [],
+  "auditTrail": []
+}
+
+
+
